@@ -1,0 +1,25 @@
+enclave {
+    //from "sgx_tstdc.edl" import *;
+    
+     //from "../TLSLIB/TLSLIB.edl" import *;
+
+    include "sgx_report.h"
+    include "stddef.h"
+    include "sgx_tseal.h"
+    include "sgx_tcrypto.h"
+    from "../nrt_tke/nrt_tke.edl" import *;
+    trusted {
+        /* define ECALLs here. */
+        public void enclave_init([out, size=sealedSize] sgx_sealed_data_t* sealed, size_t sealedSize, [out] size_t* sealedLen, [out,size=cmackeysize] sgx_sealed_data_t *sealedcmackey,size_t cmackeysize,[out] size_t *sealedcmackeylen,[out] uint8_t dhPublicKey[64]);
+        public void enclave_registeruser(nrt_ra_context_t context, [in, size=passwordlen] uint8_t *password, size_t passwordlen,[out] uint8_t uid[8], [out] uint8_t cmactag[16], [out] uint8_t s[64], [out] uint8_t sharedkey[2048]);
+        public void enclave_login(nrt_ra_context_t context, [in, size=passwordlen] uint8_t* password, size_t passwordlen, [in] uint8_t uid[8], [in] uint8_t cmactag[16],[in] uint8_t cmacuisig[64], [out] uint8_t ct[512],[out] size_t *authenticated);
+        public void enclave_signtransaction(nrt_ra_context_t context, [in, size=transactiontextlen] uint8_t* tansactiontext, size_t transactiontextlen,[in] uint8_t browsersig[64], [in] uint8_t uid[8], [out] uint8_t esig[64], [out] uint8_t pkt[64],[out] size_t *retvalue);
+        public int ecall_enclave_init_ra(int b_pse, [out] nrt_ra_context_t *context);
+        public int ecall_enclave_close_ra(nrt_ra_context_t context);
+    };
+
+    untrusted {
+        /* define OCALLs here. */
+
+    };
+};
